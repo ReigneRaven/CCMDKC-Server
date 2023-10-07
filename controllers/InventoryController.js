@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const Inventory = require('../models/InventoryModel')
 
-
 //Get All Inventory
 //@route GET /api/inventory
 //@access Public
@@ -18,7 +17,7 @@ const getOneInventory = asyncHandler (async (req, res) => {
 
     if(!inventory){
         res.status(400)
-        throw new Error('Appointment no found')
+        throw new Error('Inventory not found')
     }
     
     res.status(200).json(inventory)
@@ -31,6 +30,7 @@ const getMultiInventory = asyncHandler (async (req, res) => {
     const inventory = await Inventory.find({Inventory})
     res.status(200).json(inventory)
 })
+//to be changed!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 //Post an Inventory
@@ -49,11 +49,11 @@ const postInventory = asyncHandler (async (req, res) => {
     }
 
     //Check if Inventory exist
-    const inventoryExist = await Appointments.findOne({itemName})
+    const inventoryExist = await Inventory.findOne({itemName})
 
     if(inventoryExist){
         res.status(400)
-        throw new Error('Timeslot already in use')
+        throw new Error('Inventory under that name in use')
     }
 
     const inventory = await Inventory.create({
@@ -71,7 +71,7 @@ const postInventory = asyncHandler (async (req, res) => {
         })
     } else {
         res.status(400)
-        throw new Error('Cant add Appointment')
+        throw new Error('Cant add Inventory')
     }
 })
 
@@ -103,7 +103,7 @@ const deltInventory = asyncHandler (async (req, res) => {
 
     if(!inventory){
         res.status(400)
-        throw new Error('User no found')
+        throw new Error('Inventory not found')
     }
 
     await inventory.deleteOne()
@@ -120,7 +120,7 @@ const deltMultiInventory = asyncHandler (async (req, res) => {
 
     if(!inventory){
         res.status(400)
-        throw new Error('User no found')
+        throw new Error('Inventory not found')
     }
 
     await inventory.deleteMany()

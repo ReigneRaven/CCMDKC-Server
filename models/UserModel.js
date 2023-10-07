@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add your Address']
     },
-    contact_no: {
+    contactNum: {
         type: String,
         required: [true, 'Please add your Contact Number']
     },
@@ -29,8 +29,13 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add your Password']
     },
+    confirmpassword: {
+        type: String,
+        required: [true, 'Please add your Password']
+    },
 }, {
     timestamps: true
 })
 
 module.exports = mongoose.model('User', userSchema)
+

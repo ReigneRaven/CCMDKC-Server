@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler')
 const Admin = require('../models/AdminModel')
 const CrytpoJS = require('crypto-js')
+const jwt = require('jsonwebtoken');
+const secretKey = 'verySecretKey';
 
 //Get All Admin
 //@route GET /api/admin
@@ -53,8 +55,11 @@ const loginAdmin = asyncHandler (async (req, res) => {
     const userExist = await Admin.findOne({email, compare})
 
     if(userExist){
-        const getUser = await Admin.findOne(userExist)
-        res.status(200).json(getUser)
+        const isAdmin = userExist.role === 'admin';
+        const token = jwt.sign({ userId: userExist._id, isAdmin }, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ token, isAdmin });
+        // const getUser = await Admin.findOne(userExist)
+        // res.status(200).json(getUser)
     } else {
         res.status(400)
         throw new Error('Wrong Credentials')

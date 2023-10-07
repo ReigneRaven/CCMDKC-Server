@@ -1,6 +1,10 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/UserModel')
 const CrytpoJS = require('crypto-js')
+const jwt = require('jsonwebtoken');
+const secretKey = 'verySecretKey';
+
+
 
 //Get All User
 //@route GET /api/user
@@ -51,72 +55,88 @@ const loginUser = asyncHandler (async (req, res) => {
 
     //Check if user exist
     const userExist = await User.findOne({email, compare})
-
-    if(userExist){
-        const getUser = await User.findOne(userExist)
-        res.status(200).json(getUser)
-    } else {
+  
+    if(userExist){    
+        // const getUser = await User.findOne(userExist)
+        // res.status(200).json(getUser)
+        const userId = userExist._id;
+        const isUser = userExist.role === 'patient';
+        const token = jwt.sign({ userId, isUser }, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ token, userId, isUser });
+    } 
+    else {
         res.status(400)
         throw new Error('Wrong Credentials')
     }
-
+   
 })
 
 //Post User
 //@route POST /api/user
 //@access Public
-const postUser = asyncHandler (async (req, res) => {
+const postUser = asyncHandler(async (req, res) => {
     const { 
         name,
         birthday,
         sex,
         address,
-        contact_no,
+        contactNum,
         email,
-        password
-     } = req.body
+        password,
+        confirmpassword
+    } = req.body;
 
-    if(!name && !email){
-        res.status(400)
-        throw new Error('Please add all fields')
+    if (!name || !email || !password || !confirmpassword) {
+        res.status(400).json({ error: 'Please fill in all required fields' });
+        return;
     }
 
-    //Check if user exist
-    const userExist = await User.findOne({email})
+    // Check if user with the same email already exists
+    const userExist = await User.findOne({ email });
 
-    if(userExist){
-        res.status(400)
-        throw new Error('Email already in use')
+    if (userExist) {
+        res.status(400).json({ error: 'Email already in use' });
+        return;
     }
 
-    const cipher = CrytpoJS.AES.encrypt(password, 'secret key 123').toString()
+    // Encrypt the password before storing it
+    const cipher = CrytpoJS.AES.encrypt(password, 'secret key 123').toString();
 
-    const user = await User.create({
-        name, 
+    const newUser = new User({
+        name,
         birthday,
         sex,
         address,
-        contact_no,
-        email, 
-        password: cipher
-    })
+        contactNum,
+        email,
+        password: cipher,
+        confirmpassword
+    });
 
-    if(user){
+    try {
+        const savedUser = await newUser.save();
+
+        // Create a JWT token for the new user
+        const token = jwt.sign(
+            { userId: savedUser._id, isAdmin: false },
+            secretKey,
+            { expiresIn: '1h' }
+        );
+
         res.status(201).json({
-            _id: user.id,
-            name: user.name,
-            birthday: user.birthday,
-            sex: user.sex,
-            address: user.address,
-            contact_no: user.contact_no,
-            email: user.email,
-            password: user.cipher
-        })
-    } else {
-        res.status(400)
-        throw new Error('Cant register')
+            token,
+            userId: savedUser._id,
+            name: savedUser.name,
+            birthday: savedUser.birthday,
+            sex: savedUser.sex,
+            address: savedUser.address,
+            contactNum: savedUser.contactNum,
+            email: savedUser.email,
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Registration failed' });
     }
-})
+});
 
 //Update User
 //@route PUT /api/user/:id
@@ -201,3 +221,5 @@ module.exports = {
     deltMultiUser,
     loginUser
 }
+
+

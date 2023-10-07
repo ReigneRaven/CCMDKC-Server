@@ -24,13 +24,31 @@ const getOneAppointment = asyncHandler (async (req, res) => {
 })
 
 //Get Multiple Appointments
-//@route GET /api/appointment/:ids
+//@route GET /api/appointments/:ids
 //@access Public
 const getMultiAppointments = asyncHandler (async (req, res) => {
-    const appointment = await Appointments.find({Appointments})
-    res.status(200).json(appointment)
+    try{
+    const appointmentIds = req.params.ids.split(',');
+    const appointments = await Appointments.find({ _id: { $in: appointmentIds } });
+    res.status(200).json(appointments)
+
+    }catch(error){
+        res.status(500).json({error:error.message})
+    }
 })
 
+// Get Appointments created by the authenticated user
+//@route GET /api/appointments/user/:userId
+//@access Protected (requires authentication)
+const getAppointmentsByUser = asyncHandler(async (req, res) => {
+    const userId = req.params.userId; 
+  
+    // Fetch appointments created by the authenticated user
+    const appointments = await Appointments.find({ userId: userId });
+  
+    res.status(200).json(appointments);
+  });
+  
 
 //Post an Appointment
 //@route POST /api/appointment
@@ -39,7 +57,6 @@ const postAppointment = asyncHandler (async (req, res) => {
     const { 
         name,
         appointmentDate,
-        appointmentType,
         appointmentTime
      } = req.body
 
@@ -49,17 +66,16 @@ const postAppointment = asyncHandler (async (req, res) => {
     }
 
     //Check if Appointment exist
-    const appointmentExist = await Appointments.findOne({appointmentTime, appointmentDate})
+    const appointmentExist = await Appointments.findOne({appointmentTime})
 
     if(appointmentExist){
         res.status(400)
-        throw new Error('Appointment in that timeslot already in use')
+        throw new Error('Timeslot already in use')
     }
 
     const appointment = await Appointments.create({
         name,
         appointmentDate,
-        appointmentType,
         appointmentTime
     })
 
@@ -68,12 +84,11 @@ const postAppointment = asyncHandler (async (req, res) => {
             _id: appointment.id,
             name: appointment.name,
             appointmentDate: appointment.appointmentDate,
-            appointmentType: appointment.appointmentType,
             appointmentTime: appointment.appointmentTime
         })
     } else {
         res.status(400)
-        throw new Error('Cant add Appointment')
+        throw new Error('Cannot add Appointment')
     }
 })
 
@@ -81,7 +96,7 @@ const postAppointment = asyncHandler (async (req, res) => {
 //@route POST /api/appointment/check
 //@access Public
 const checkAppointment = asyncHandler (async (req, res) => {
-    let { appointmentTime, appointmentDate } = req.body
+    let { appointmentTime } = req.body
 
     if(!appointmentTime){
         res.status(400)
@@ -89,7 +104,7 @@ const checkAppointment = asyncHandler (async (req, res) => {
     }
 
     //Check if Timeslot is available
-    const isAvailable = await Appointments.findOne({appointmentTime, appointmentDate})
+    const isAvailable = await Appointments.findOne({appointmentTime})
     if(isAvailable){
         res.status(400)
         throw new Error('Timeslot already in use')
@@ -153,6 +168,7 @@ module.exports = {
     getAppointment,
     getOneAppointment,
     getMultiAppointments,
+    getAppointmentsByUser,
     postAppointment,
     updateAppointment,
     deltAppointment,
