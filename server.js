@@ -5,12 +5,18 @@ const connectDB = require('./database/db')
 const cors = require('cors')
 const dotenv = require('dotenv').config()
 const port = process.env.PORT || 5000
+const socketIo = require('socket.io');
+const http = require('http'); 
+
+
 
 connectDB()
 
 const app = express()
 
 app.use(cors())
+
+app.options('/api/appointment/:id/status', cors());
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -23,4 +29,14 @@ app.use('/api/inventory', require('./routes/InventoryRouter'))
 
 app.use(errorHandler)
 
-app.listen(port, () => console.log(`Server started on port ${port}`))
+// app.listen(port, () => console.log(`Server started on port ${port}`))
+const server = http.createServer(app);
+
+const io = socketIo(server, {
+    cors: {
+      origin: "http://localhost:5173", // Allow requests from this origin
+      methods: ["GET", "POST", "PUT", "DELETE"] // Allow only GET and POST requests
+    }
+  });
+
+server.listen(port, () => console.log(`Server started on port ${port}`.green));
