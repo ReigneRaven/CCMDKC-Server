@@ -34,8 +34,8 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
     cors: {
-      origin: "http://localhost:5173", // Allow requests from this origin
-      methods: ["GET", "POST", "PUT", "DELETE"] // Allow only GET and POST requests
+      origin: "http://localhost:5173", 
+      methods: ["GET", "POST", "PUT", "DELETE"] 
     }
   });
 

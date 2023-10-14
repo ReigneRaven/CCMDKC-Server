@@ -3,6 +3,7 @@ const User = require('../models/UserModel')
 const CrytpoJS = require('crypto-js')
 const jwt = require('jsonwebtoken');
 const secretKey = 'verySecretKey';
+const nodemailer = require('nodemailer');
 
 
 
@@ -156,26 +157,40 @@ const updateUser = asyncHandler (async (req, res) => {
     res.status(200).json(updatedUser)
 })
 
-//Edit User Password
+//Edit User Password ------------------------------------------------------------------------------------------------------------------------------------------------------
 //@route PUT /api/user/:id
 //@access Public
-const editPassword = asyncHandler (async (req, res) => {
-    //Check if User exist
-    const checkUser = await User.findById(req.params.id)
-
-    if(!checkUser){
-        res.status(400)
-        throw new Error('User not found')
-    }
-
-    const cipher = CrytpoJS.AES.encrypt(req.body.password, 'secret key 123').toString()
-    const editUserPassword = await User.findByIdAndUpdate(
-        req.params.id,
-        {password: cipher},
-        {new: true}
-    )
-    res.status(200).json(editUserPassword)
-})
+// const editPassword = asyncHandler(async (req, res) => {
+//     // Check if User exists
+//     const checkUser = await User.findById(req.params.id);
+  
+//     if (!checkUser) {
+//       res.status(400);
+//       throw new Error('User not found');
+//     }
+  
+//     const cipher = CryptoJS.AES.encrypt(req.body.password, 'secret key 123').toString();
+  
+//     const updatedUser = await User.findByIdAndUpdate(
+//       req.params.id,
+//       { password: cipher },
+//       { new: true }
+//     );
+  
+//     const payload = {
+//       user: {
+//         id: updatedUser._id,
+      
+//       },
+//     };
+//     jwt.sign(payload, 'VerySecretiveKey', { expiresIn: '1h' }, (err, token) => {
+//       if (err) {
+//         throw err;
+//       }
+//       // Send the new token to the client
+//       res.json({ token });
+//     });
+//   });
 
 //Delete User
 //@route DELETE /api/user/:id
@@ -210,16 +225,124 @@ const deltMultiUser = asyncHandler (async (req, res) => {
     res.status(200).json({ id: req.params.id})
 })
 
+//FORGOT PASSWORD----------------------------------------------------------------
+//@route POST /api/user/forgotpassword
+const transporter = nodemailer.createTransport({
+    service: "hotmail",
+    auth: {
+      user: "ayokonasamernstack@outlook.com",
+      pass: "123456789AATC!"
+    },
+  });
+  
+const sendResetPasswordEmail = (email, resetToken) => {
+const options = {
+      from: "ayokonasamernstack@outlook.com",
+      to: email, 
+      subject: "Reset Password",
+      text: `This is your reset token: ${resetToken}`,
+    };
+
+    transporter.sendMail(options, (error, info) => {
+      if (error) {
+        console.error("Error sending email", error);
+      } else {
+        console.log('Email sent: ', info.response);
+      }
+    });
+  };
+  
+  const generateResetToken = () => {
+    const token = require('crypto').randomBytes(32).toString('hex');
+    return token;
+  };
+  
+  const forgotPassword = (req, res, next) => {
+    const email = req.body.email;
+  
+    const resetToken = generateResetToken();
+    User.findOneAndUpdate(
+      { email: email },
+      { resetPasswordToken: resetToken },
+      { new: true } 
+    )
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({
+            message: "User not found",
+          });
+        }
+        sendResetPasswordEmail(email, resetToken);
+        res.status(200).json({
+          message: "Password reset email has been sent. Check your inbox.",
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: "An error occurred. Please try again",
+        });
+      });
+};
+
+//------------------------NEW PASS
+//@route POST /api/user/resetpassword
+
+const resetPassword = (req, res, next) => {
+  const { email, resetToken, newPassword } = req.body;
+        
+        User.findOne({ email: email, resetPasswordToken: resetToken })
+          .then((user) => {
+            if (!user) {
+              return res.status(404).json({
+                message: "Invalid reset token or email.",
+              });
+            }
+      
+           
+            bcrypt.hash(newPassword, 10, (err, hashedPass) => {
+              if (err) {
+                return res.status(500).json({
+                  message: "An error occurred while hashing the password.",
+                });
+              }
+
+              user.password = hashedPass;
+              user.resetPasswordToken = null; 
+              user.resetPasswordExpires = null; 
+      
+              user
+                .save()
+                .then(() => {
+                  res.status(200).json({
+                    message: "Password reset successfully!",
+                  });
+                })
+                .catch((error) => {
+                  res.status(500).json({
+                    message: "An error occurred while updating the password.",
+                  });
+                });
+            });
+          })
+          .catch((error) => {
+            res.status(500).json({
+              message: "An error occurred. Please try again.",
+            });
+          });
+      };      
+
 module.exports = {
     getUser,
     getOneUser,
     getMultiUser,
     postUser,
     updateUser,
-    editPassword,
+    // editPassword,
     deltUser,
     deltMultiUser,
-    loginUser
+    loginUser,
+    forgotPassword,
+    resetPassword
 }
 
 

@@ -3,7 +3,7 @@ const Records = require('../models/PatientRecordsModel')
 
 
 //Add Medical History
-//@route PUT /api/user/:id/medical-history
+//@route POST /api/user/:id/medical-history
 //@access Public
 const addMedicalHistory = asyncHandler (async (req, res) => {
     const { allergies, diagnosis, bloodPressure, temperature, surgeries } = req.body;
