@@ -10,7 +10,8 @@ const {
     addMedicalHistory, 
     editMedicalHistory, 
     getOneMedicalHistory, 
-    deleteMedicalHistory
+    deleteMedicalHistory,
+    getAllMedical
 } = require('../controllers/MedicalHistoryController')
 const router = express.Router()
 
@@ -22,6 +23,10 @@ router.route('/:ids').get(getMultipleRecords)
 
 router.route('/:id/medical-history').post(addMedicalHistory)
 
-router.route('/medical-history/:id').put(editMedicalHistory).get(getOneMedicalHistory).delete(deleteMedicalHistory)
+router.route('/medical-history/:id').put(editMedicalHistory).delete(deleteMedicalHistory)
+
+router.route('/getmedical/:id').get(getOneMedicalHistory)
+
+router.route('/get-medical-history/:id').get(getAllMedical)
 
 module.exports = router

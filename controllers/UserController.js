@@ -143,18 +143,18 @@ const postUser = asyncHandler(async (req, res) => {
 //@route PUT /api/user/:id
 //@access Public
 const updateUser = asyncHandler (async (req, res) => {
-    const user = await User.findById(req.params.id)
+  const user = await User.findById(req.params.id)
 
-    if(!user){
-        res.status(400)
-        throw new Error('User no found')
-    }
+  if(!user){
+      res.status(400)
+      throw new Error('User no found')
+  }
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-        new: true
-    })
-    
-    res.status(200).json(updatedUser)
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+  })
+  
+  res.status(200).json(updatedUser)
 })
 
 //Edit User Password ------------------------------------------------------------------------------------------------------------------------------------------------------
