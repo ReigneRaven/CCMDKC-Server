@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/UserModel')
-const CrytpoJS = require('crypto-js')
+const CryptoJS = require('crypto-js')
 const jwt = require('jsonwebtoken');
 const secretKey = 'verySecretKey';
 const nodemailer = require('nodemailer');
@@ -77,17 +77,16 @@ const loginUser = asyncHandler (async (req, res) => {
 //@access Public
 const postUser = asyncHandler(async (req, res) => {
     const { 
-        name,
-        birthday,
-        sex,
-        address,
-        contactNum,
-        email,
-        password,
-        confirmpassword
+        FirstName,LastName, MiddleName,
+        birthday,sex,contactNum,
+        houseNum,street,brgy,city,prov,
+        email,UserName,
+        password,confirmpassword
+  
     } = req.body;
 
-    if (!name || !email || !password || !confirmpassword) {
+    // !UserName||!LastName||!FirstName||!MiddleName||
+    if (!UserName|| !email || !password || !confirmpassword) {
         res.status(400).json({ error: 'Please fill in all required fields' });
         return;
     }
@@ -101,17 +100,15 @@ const postUser = asyncHandler(async (req, res) => {
     }
 
     // Encrypt the password before storing it
-    const cipher = CrytpoJS.AES.encrypt(password, 'secret key 123').toString();
+    const cipher = CryptoJS.AES.encrypt(password, 'secret key 123').toString();
 
     const newUser = new User({
-        name,
-        birthday,
-        sex,
-        address,
-        contactNum,
-        email,
-        password: cipher,
-        confirmpassword
+      FirstName,LastName, MiddleName,
+      birthday,sex,contactNum,
+      houseNum,street,brgy,city,prov,
+      email,UserName,
+      password: cipher,
+      confirmpassword
     });
 
     try {
@@ -127,17 +124,70 @@ const postUser = asyncHandler(async (req, res) => {
         res.status(201).json({
             token,
             userId: savedUser._id,
-            name: savedUser.name,
+            FirstName: savedUser.FirstName,
+            MiddleName: savedUser.MiddleName,
+            LastName: savedUser.LastName,
             birthday: savedUser.birthday,
             sex: savedUser.sex,
-            address: savedUser.address,
-            contactNum: savedUser.contactNum,
+             houseNum: savedUser.houseNum,
+             street: savedUser.street,
+             brgy: savedUser.brgy,
+             city: savedUser.city,
+             prov: savedUser.prov,
+             contactNum: savedUser.contactNum,
             email: savedUser.email,
+            UserName: savedUser.UserName,
         });
     } catch (error) {
         res.status(500).json({ error: 'Registration failed' });
     }
 });
+
+// const updateDetails = asyncHandler(async (req, res) => {
+//   const userId = req.params.id;
+//   const {
+//       LastName,
+//       FirstName,
+//       MiddleName,
+//       birthday,
+//       sex,
+//       address,
+//       contactNum
+//   } = req.body;
+
+//   try {
+//       let details = await Details.findOne({ user: userId });
+
+//       if (!details) {
+//           // If user details do not exist, create a new entry
+//           details = new Details({
+//               user: userId,
+//               LastName,
+//               FirstName,
+//               MiddleName,
+//               birthday,
+//               sex,
+//               address,
+//               contactNum
+//           });
+//           await details.save();
+//       } else {
+//           // If user details already exist, update the existing entry
+//           details.LastName = LastName;
+//           details.FirstName = FirstName;
+//           details.MiddleName = MiddleName;
+//           details.birthday = birthday;
+//           details.sex = sex;
+//           details.address = address;
+//           details.contactNum = contactNum;
+//           await details.save();
+//       }
+
+//       res.status(200).json(details);
+//   } catch (error) {
+//       res.status(500).json({ error: 'Failed to update user details' });
+//   }
+// });
 
 //Update User
 //@route PUT /api/user/:id
@@ -337,7 +387,6 @@ module.exports = {
     getMultiUser,
     postUser,
     updateUser,
-    // editPassword,
     deltUser,
     deltMultiUser,
     loginUser,

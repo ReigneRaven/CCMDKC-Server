@@ -34,6 +34,21 @@ const getMultipleRecords = asyncHandler (async (req, res) => {
     res.status(200).json(records)
 })
 
+// Get Records for One User by Name
+// @route GET /api/records/getrecord/:userName
+// @access Protected (requires authentication)
+const getRecordsByUserName = asyncHandler(async (req, res) => {
+    const userName = req.params.userName;
+    const records = await Records.find({ patientName: userName });
+  
+    if (!records || records.length === 0) {
+      res.status(404);
+      throw new Error('No Records found for the provided user name');
+    }
+  
+    res.status(200).json(records);
+  });
+  
 
 //Post a Record
 //@route POST /api/records
@@ -83,7 +98,6 @@ const postRecords = asyncHandler (async (req, res) => {
     }
 })
 
-
 //Update a Record
 //@route PUT /api/records/:id
 //@access Public
@@ -125,5 +139,6 @@ module.exports = {
     getMultipleRecords,
     postRecords,
     updateRecords,
-    deltRecord
+    deltRecord,
+    getRecordsByUserName
 }

@@ -8,7 +8,6 @@ const {
     getOneUser, 
     deltMultiUser, 
     getMultiUser, 
-    // editPassword,
     forgotPassword,
     resetPassword
 } = require('../controllers/UserController')

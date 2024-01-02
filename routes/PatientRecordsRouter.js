@@ -4,7 +4,8 @@ const {
     postRecords, 
     getOneRecord, 
     getMultipleRecords, 
-    deltRecord
+    deltRecord,
+    getRecordsByUserName
 } = require('../controllers/PatientRecordsController')
 const { 
     addMedicalHistory, 
@@ -28,5 +29,7 @@ router.route('/medical-history/:id').put(editMedicalHistory).delete(deleteMedica
 router.route('/getmedical/:id').get(getOneMedicalHistory)
 
 router.route('/get-medical-history/:id').get(getAllMedical)
+
+router.route('/getrecord/:userName').get(getRecordsByUserName)
 
 module.exports = router

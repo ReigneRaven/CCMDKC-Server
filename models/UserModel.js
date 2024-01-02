@@ -1,9 +1,17 @@
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
-    name: {
+    FirstName: {
         type: String,
-        required: [true, 'Please add your Name']
+        required: [true, 'Please add your Name'],
+    },
+    MiddleName: {
+        type: String,
+        required: [true, 'Please add your Name'],
+    },
+    LastName: {
+        type: String,
+        required: [true, 'Please add your Name'],
     },
     birthday: {
         type: String,
@@ -13,17 +21,37 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add your Sex']
     },
-    address: {
+    contactNum: {
+        type: String,
+        required: [true, 'Please add your Contact Number'],
+    },
+    houseNum: {
         type: String,
         required: [true, 'Please add your Address']
     },
-    contactNum: {
+    street: {
         type: String,
-        required: [true, 'Please add your Contact Number']
+        required: [true, 'Please add your Address']
+    },
+    brgy: {
+        type: String,
+        required: [true, 'Please add your Address']
+    },
+    city: {
+        type: String,
+        required: [true, 'Please add your Address']
+    },
+    prov: {
+        type: String,
+        required: [true, 'Please add your Address']
     },
     email: {
         type: String,
         required: [true, 'Please add your Email']
+    },
+    UserName: {
+        type: String,
+        required: [true, 'Please add your UserName'],
     },
     password: {
         type: String,
