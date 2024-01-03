@@ -41,21 +41,21 @@ const getMultiUser = asyncHandler (async (req, res) => {
 //@route POST /api/user/login
 //@access Public
 const loginUser = asyncHandler (async (req, res) => {
-    let { email, password } = req.body
-    const bytes  = CrytpoJS.AES.decrypt(password, 'secret key 123')
-    const originalPass = bytes.toString(CrytpoJS.enc.Utf8)
+    let { UserName, password } = req.body
+    const bytes  = CryptoJS.AES.decrypt(password, 'secret key 123')
+    const originalPass = bytes.toString(CryptoJS.enc.Utf8)
     
     const compare = () => {
         originalPass === password
     }
 
-    if(!email && !compare){
+    if(!UserName && !compare){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if user exist
-    const userExist = await User.findOne({email, compare})
+    const userExist = await User.findOne({UserName, compare})
   
     if(userExist){    
         // const getUser = await User.findOne(userExist)

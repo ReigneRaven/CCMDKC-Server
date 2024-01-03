@@ -38,7 +38,7 @@ const getMultiAdmin = asyncHandler (async (req, res) => {
 //@route POST /api/admin/login
 //@access Public
 const loginAdmin = asyncHandler (async (req, res) => {
-    let { email, password } = req.body
+    let { UserName, password } = req.body
     const bytes  = CrytpoJS.AES.decrypt(password, 'secret key 123')
     const originalPass = bytes.toString(CrytpoJS.enc.Utf8)
     
@@ -46,13 +46,13 @@ const loginAdmin = asyncHandler (async (req, res) => {
         originalPass === password
     }
 
-    if(!email && !compare){
+    if(!UserName && !compare){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if user exist
-    const userExist = await Admin.findOne({email, compare})
+    const userExist = await Admin.findOne({UserName, compare})
 
     if(userExist){
         const isAdmin = userExist.role === 'admin';
@@ -72,6 +72,7 @@ const loginAdmin = asyncHandler (async (req, res) => {
 //@access Public
 const postAdmin = asyncHandler (async (req, res) => {
     const { 
+        UserName,
         name,
         role,
         email,
@@ -94,6 +95,7 @@ const postAdmin = asyncHandler (async (req, res) => {
     const cipher = CrytpoJS.AES.encrypt(password, 'secret key 123').toString()
 
     const admin = await Admin.create({
+        UserName,
         name, 
         role,
         email, 
@@ -103,6 +105,7 @@ const postAdmin = asyncHandler (async (req, res) => {
     if(admin){
         res.status(201).json({
             _id: admin.id,
+            UserName: admin.UserName,
             name: admin.name,
             role: admin.role,
             email: admin.email,
