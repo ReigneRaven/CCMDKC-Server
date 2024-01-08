@@ -1,17 +1,21 @@
 const mongoose = require('mongoose')
 
 const appointmentSchema = mongoose.Schema({
-    name: {
+    service: {
         type: String,
-        required: [true, 'Please add your Name']
+        required: [true, 'Please enter Service']
+    },
+    UserName: {
+        type: String,
+        required: [true, 'Please enter Username']
     },
     appointmentDate: {
         type: Date,
-        required: [true, 'Please add Date']
+        required: [true, 'Please enter Date']
     },
     appointmentTime: {
         type: String,
-        required: [true, 'Please add Time Slot']
+        required: [true, 'Please enter Time Slot']
     },
     status: {
         type: String,

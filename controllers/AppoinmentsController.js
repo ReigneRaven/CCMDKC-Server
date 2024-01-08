@@ -56,12 +56,13 @@ const getAppointmentsByUser = asyncHandler(async (req, res) => {
 //@access Public
 const postAppointment = asyncHandler (async (req, res) => {
     const { 
-        name,
+        service,
+        UserName,
         appointmentDate,
         appointmentTime
      } = req.body
 
-    if(!name && !appointmentTime){
+    if(!UserName && !appointmentTime){
         res.status(400)
         throw new Error('Please add all fields')
     }
@@ -75,7 +76,8 @@ const postAppointment = asyncHandler (async (req, res) => {
     }
 
     const appointment = await Appointments.create({
-        name,
+        service,
+        UserName,
         appointmentDate,
         appointmentTime
     })
@@ -83,7 +85,8 @@ const postAppointment = asyncHandler (async (req, res) => {
     if(appointment){
         res.status(201).json({
             _id: appointment.id,
-            name: appointment.name,
+            service:appointment.service,
+            UserName: appointment.UserName,
             appointmentDate: appointment.appointmentDate,
             appointmentTime: appointment.appointmentTime
         })
