@@ -56,7 +56,7 @@ const getAppointmentsByUser = asyncHandler(async (req, res) => {
 //@access Public
 const postAppointment = asyncHandler (async (req, res) => {
     const { 
-        service,
+        // service,
         UserName,
         appointmentDate,
         appointmentTime
@@ -75,8 +75,10 @@ const postAppointment = asyncHandler (async (req, res) => {
         throw new Error('Timeslot already in use')
     }
 
+    const defaultService = req.body.service || 'Nephrology Consultation';
+
     const appointment = await Appointments.create({
-        service,
+        service: defaultService,
         UserName,
         appointmentDate,
         appointmentTime

@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const appointmentSchema = mongoose.Schema({
     service: {
         type: String,
-        required: [true, 'Please enter Service']
+        default: 'Nephrology Consultation'
     },
     UserName: {
         type: String,

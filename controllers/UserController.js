@@ -23,7 +23,7 @@ const getOneUser = asyncHandler (async (req, res) => {
 
     if(!user){
         res.status(400)
-        throw new Error('User no found')
+        throw new Error('User not found')
     }
     
     res.status(200).json(user)
