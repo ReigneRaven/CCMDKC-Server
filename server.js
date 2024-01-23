@@ -7,7 +7,7 @@ const dotenv = require('dotenv').config()
 const port = process.env.PORT || 5000
 const socketIo = require('socket.io');
 const http = require('http'); 
-
+const path = require('path');
 
 
 connectDB()
@@ -29,6 +29,7 @@ app.use('/api/inventory', require('./routes/InventoryRouter'))
 
 app.use(errorHandler)
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // app.listen(port, () => console.log(`Server started on port ${port}`))
 const server = http.createServer(app);
 

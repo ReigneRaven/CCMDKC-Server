@@ -13,6 +13,14 @@ const inventorySchema = mongoose.Schema({
         type: String,
         required: [true, 'Please a value']
     },
+    itemPrice: {
+        type: Number,
+        required: true
+    },
+    itemImg: {
+        type: String, // Assuming you are storing the file path as a string
+        default: "/default/image.jpg"
+      },
 }, {
     timestamps: true
 })

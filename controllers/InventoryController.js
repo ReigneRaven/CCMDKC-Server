@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const Inventory = require('../models/InventoryModel')
+const multer = require('multer');
+const path = require('path');
 
 //Get All Inventory
 //@route GET /api/inventory
@@ -33,47 +35,58 @@ const getMultiInventory = asyncHandler (async (req, res) => {
 //to be changed!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-//Post an Inventory
-//@route POST /api/inventory
-//@access Public
-const postInventory = asyncHandler (async (req, res) => {
-    const { 
+  
+// Post an Inventory with image
+// @route POST /api/inventory
+// @access Public
+const postInventory = asyncHandler(async (req, res) => {
+    try {
+      const { itemName, itemDescription, stocksAvailable, itemPrice } = req.body;
+  
+      // Check if required fields are present
+      if (!itemName || !stocksAvailable) {
+        res.status(400);
+        throw new Error('Please add all fields');
+      }
+  
+      // Check if Inventory with the same itemName already exists
+      const inventoryExist = await Inventory.findOne({ itemName });
+  
+      if (inventoryExist) {
+        res.status(400);
+        throw new Error('Inventory under that name in use');
+      }
+  
+      // Log the file path to debug
+      console.log('File Path:', req.file.path);
+  
+      // Create a new Inventory instance
+      const inventory = new Inventory({
         itemName,
         itemDescription,
-        stocksAvailable
-     } = req.body
-
-    if(!itemName && !stocksAvailable){
-        res.status(400)
-        throw new Error('Please add all fields')
+        stocksAvailable,
+        itemPrice,
+        itemImg: req.file ? req.file.path : '',
+      });
+  
+      // Save the Inventory to the database
+      await inventory.save();
+  
+      // Send a response
+      res.status(201).json({
+        _id: inventory.id,
+        itemName: inventory.itemName,
+        itemDescription: inventory.itemDescription,
+        stocksAvailable: inventory.stocksAvailable,
+        itemPrice: inventory.itemPrice,
+        itemImg: inventory.itemImg,
+      });
+    } catch (error) {
+      console.error('Error in postInventory:', error);
+      res.status(500).send('Internal Server Error');
     }
-
-    //Check if Inventory exist
-    const inventoryExist = await Inventory.findOne({itemName})
-
-    if(inventoryExist){
-        res.status(400)
-        throw new Error('Inventory under that name in use')
-    }
-
-    const inventory = await Inventory.create({
-        itemName,
-        itemDescription,
-        stocksAvailable
-    })
-
-    if(inventory){
-        res.status(201).json({
-            _id: inventory.id,
-            itemName: inventory.itemName,
-            itemDescription: inventory.itemDescription,
-            stocksAvailable: inventory.stocksAvailable
-        })
-    } else {
-        res.status(400)
-        throw new Error('Cant add Inventory')
-    }
-})
+  });
+  
 
 
 //Update an Inventory
