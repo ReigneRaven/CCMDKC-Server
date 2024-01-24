@@ -5,7 +5,8 @@ const {
     getOneRecord, 
     getMultipleRecords, 
     deltRecord,
-    getRecordsByUserName
+    getRecordsByUserName,
+    updateRecords
 } = require('../controllers/PatientRecordsController')
 const { 
     addMedicalHistory, 
@@ -14,11 +15,13 @@ const {
     deleteMedicalHistory,
     getAllMedical
 } = require('../controllers/MedicalHistoryController')
+
+
 const router = express.Router()
 
 router.route('/').get(getRecords).post(postRecords)
 
-router.route('/:id').get(getOneRecord).delete(deltRecord)
+router.route('/:id').get(getOneRecord).delete(deltRecord).put(updateRecords)
 
 router.route('/:ids').get(getMultipleRecords)
 

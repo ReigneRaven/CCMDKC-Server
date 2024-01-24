@@ -4,7 +4,11 @@ const pharmacySchema = mongoose.Schema({
     quantity: {
         type: Number,
         required: true
-    }
+    },
+    modeCOD: {
+        type: Number,
+        required: true
+    },
 }, {
     timestamps: true
 })
