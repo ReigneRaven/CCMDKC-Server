@@ -10,7 +10,7 @@ const inventorySchema = mongoose.Schema({
         required: [true, 'Please a value']
     },
     stocksAvailable: {
-        type: String,
+        type: Number,
         required: [true, 'Please a value']
     },
     itemPrice: {

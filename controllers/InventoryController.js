@@ -1,152 +1,146 @@
-const asyncHandler = require('express-async-handler')
-const Inventory = require('../models/InventoryModel')
+const asyncHandler = require('express-async-handler');
+const Inventory = require('../models/InventoryModel');
 const multer = require('multer');
 const path = require('path');
 
-//Get All Inventory
+// Get All Inventory
 //@route GET /api/inventory
 //@access Public
-const getInventory = asyncHandler (async (req, res) => {
-    const inventory = await Inventory.find({Inventory})
-    res.status(200).json(inventory)
-})
+const getInventory = asyncHandler(async (req, res) => {
+  const inventory = await Inventory.find({ Inventory });
+  res.status(200).json(inventory);
+});
 
-//Get One Inventory
+// Get One Inventory
 //@route GET /api/inventory/:id
 //@access Public
-const getOneInventory = asyncHandler (async (req, res) => {
-    const inventory = await Inventory.findById(req.params.id)
+const getOneInventory = asyncHandler(async (req, res) => {
+  const inventory = await Inventory.findById(req.params.id);
 
-    if(!inventory){
-        res.status(400)
-        throw new Error('Inventory not found')
-    }
-    
-    res.status(200).json(inventory)
-})
+  if (!inventory) {
+    res.status(400);
+    throw new Error('Inventory not found');
+  }
 
-//Get Multiple Inventory
+  res.status(200).json(inventory);
+});
+
+// Get Multiple Inventory
 //@route GET /api/inventory/:ids
 //@access Public
-const getMultiInventory = asyncHandler (async (req, res) => {
-    const inventory = await Inventory.find({Inventory})
-    res.status(200).json(inventory)
-})
-//to be changed!!!!!!!!!!!!!!!!!!!!!!!!
+const getMultiInventory = asyncHandler(async (req, res) => {
+  const inventory = await Inventory.find({ Inventory });
+  res.status(200).json(inventory);
+});
 
-
-  
 // Post an Inventory with image
 // @route POST /api/inventory
 // @access Public
 const postInventory = asyncHandler(async (req, res) => {
-    try {
-      const { itemName, itemDescription, stocksAvailable, itemPrice } = req.body;
-  
-      // Check if required fields are present
-      if (!itemName || !stocksAvailable) {
-        res.status(400);
-        throw new Error('Please add all fields');
-      }
-  
-      // Check if Inventory with the same itemName already exists
-      const inventoryExist = await Inventory.findOne({ itemName });
-  
-      if (inventoryExist) {
-        res.status(400);
-        throw new Error('Inventory under that name in use');
-      }
-  
-      // Log the file path to debug
-      console.log('File Path:', req.file.path);
-  
-      // Create a new Inventory instance
-      const inventory = new Inventory({
-        itemName,
-        itemDescription,
-        stocksAvailable,
-        itemPrice,
-        itemImg: req.file ? req.file.path : '',
-      });
-  
-      // Save the Inventory to the database
-      await inventory.save();
-  
-      // Send a response
-      res.status(201).json({
-        _id: inventory.id,
-        itemName: inventory.itemName,
-        itemDescription: inventory.itemDescription,
-        stocksAvailable: inventory.stocksAvailable,
-        itemPrice: inventory.itemPrice,
-        itemImg: inventory.itemImg,
-      });
-    } catch (error) {
-      console.error('Error in postInventory:', error);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
+  try {
+    const { itemName, itemDescription, stocksAvailable, itemPrice } = req.body;
 
+    // Check if required fields are present
+    if (!itemName || !stocksAvailable) {
+      res.status(400);
+      throw new Error('Please add all fields');
+    }
+
+    // Check if Inventory with the same itemName already exists
+    const inventoryExist = await Inventory.findOne({ itemName });
+
+    if (inventoryExist) {
+      res.status(400);
+      throw new Error('Inventory under that name in use');
+    }
+
+    // Log the file path to debug
+    console.log('File Path:', req.file.path);
+
+    // Create a new Inventory instance
+    const inventory = new Inventory({
+      itemName,
+      itemDescription,
+      stocksAvailable,
+      itemPrice,
+      itemImg: req.file ? req.file.path : '',
+    });
+
+    // Save the Inventory to the database
+    await inventory.save();
+
+    // Send a response
+    res.status(201).json({
+      _id: inventory.id,
+      itemName: inventory.itemName,
+      itemDescription: inventory.itemDescription,
+      stocksAvailable: inventory.stocksAvailable,
+      itemPrice: inventory.itemPrice,
+      itemImg: inventory.itemImg,
+    });
+  } catch (error) {
+    console.error('Error in postInventory:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 //Update an Inventory
-//@route PUT /api/inventory/:id
-//@access Public
+// //@route PUT /api/inventory/:id
+// //@access Public
 const updateInventory = asyncHandler (async (req, res) => {
     const inventory = await Inventory.findById(req.params.id)
 
     if(!inventory){
-        res.status(400)
-        throw new Error('Inventory not found')
+       res.status(400)
+         throw new Error('Inventory not found')
     }
 
     const updatedInventory = await Inventory.findByIdAndUpdate(req.params.id, req.body, {
         new: true
-    })
+          })
     
-    res.status(200).json(updatedInventory)
-})
+     res.status(200).json(updatedInventory)
+ })
 
 
-//Delete an Inventory
+// Delete an Inventory
 //@route DELETE /api/inventory/:id
 //@access Public
-const deltInventory = asyncHandler (async (req, res) => {
-    const inventory = await Inventory.findById(req.params.id)
+const deltInventory = asyncHandler(async (req, res) => {
+  const inventory = await Inventory.findById(req.params.id);
 
-    if(!inventory){
-        res.status(400)
-        throw new Error('Inventory not found')
-    }
+  if (!inventory) {
+    res.status(400);
+    throw new Error('Inventory not found');
+  }
 
-    await inventory.deleteOne()
+  await inventory.deleteOne();
 
-    res.status(200).json({ id: req.params.id})
-})
+  res.status(200).json({ id: req.params.id });
+});
 
-
-//Delete Multiple Inventory
+// Delete Multiple Inventory
 //@route DELETE /api/inventory/:ids
 //@access Public
-const deltMultiInventory = asyncHandler (async (req, res) => {
-    const inventory = await Inventory.findById(req.params.id)
+const deltMultiInventory = asyncHandler(async (req, res) => {
+  const inventory = await Inventory.findById(req.params.id);
 
-    if(!inventory){
-        res.status(400)
-        throw new Error('Inventory not found')
-    }
+  if (!inventory) {
+    res.status(400);
+    throw new Error('Inventory not found');
+  }
 
-    await inventory.deleteMany()
+  await inventory.deleteMany();
 
-    res.status(200).json({ id: req.params.id})
-})
+  res.status(200).json({ id: req.params.id });
+});
 
 module.exports = {
-    getInventory,
-    getOneInventory,
-    getMultiInventory,
-    postInventory,
-    updateInventory,
-    deltInventory,
-    deltMultiInventory
-}
+  getInventory,
+  getOneInventory,
+  getMultiInventory,
+  postInventory,
+  updateInventory,
+  deltInventory,
+  deltMultiInventory,
+};

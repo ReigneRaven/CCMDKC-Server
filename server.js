@@ -26,6 +26,7 @@ app.use('/api/admin', require('./routes/AdminRouter'))
 app.use('/api/appointments', require('./routes/AppointmentsRouter'))
 app.use('/api/records', require('./routes/PatientRecordsRouter'))
 app.use('/api/inventory', require('./routes/InventoryRouter'))
+app.use('/api/purchase', require('./routes/PharmRouter')) 
 
 app.use(errorHandler)
 

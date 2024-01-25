@@ -1,10 +1,23 @@
 const express = require('express');
-const router = express.Router();
+
 const {
     postPharm,
     getAllPharm,
+    getPurchasesByUser,
+    updatePurchase
 } = require('../controllers/PharmacyController')
 
-router.route('/pharmacy').post(postPharm)
 
-router.route('/pharmacy/all').get(getAllPharm)
+const router = express.Router()
+
+router.route('/').post(postPharm)
+
+router.route('/all').get(getAllPharm)
+
+router.route('/getPurchase/:id').get(getPurchasesByUser)
+
+router.route('/:id/orderstatus').put(updatePurchase)
+
+
+
+module.exports = router

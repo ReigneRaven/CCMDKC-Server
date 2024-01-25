@@ -56,23 +56,25 @@ const getAppointmentsByUser = asyncHandler(async (req, res) => {
 //@access Public
 const postAppointment = asyncHandler (async (req, res) => {
     const { 
-        // service,
+        service,
         UserName,
         appointmentDate,
         appointmentTime
      } = req.body
 
-    if(!UserName && !appointmentTime){
+    if(!UserName || !appointmentTime){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if Appointment exist
-    const appointmentExist = await Appointments.findOne({appointmentTime})
+    const appointmentExist = await Appointments.findOne({
+        appointmentTime, service
+    });
 
-    if(appointmentExist){
-        res.status(400)
-        throw new Error('Timeslot already in use')
+    if (appointmentExist) {
+        res.status(400);
+        throw new Error('Timeslot already booked for the selected service');
     }
 
     const defaultService = req.body.service || 'Nephrology Consultation';
@@ -102,18 +104,22 @@ const postAppointment = asyncHandler (async (req, res) => {
 //@route POST /api/appointment/check
 //@access Public
 const checkAppointment = asyncHandler (async (req, res) => {
-    let { appointmentTime } = req.body
+    let { appointmentTime, appointmentDate } = req.body
 
-    if(!appointmentTime){
+    if(!appointmentTime || !appointmentDate){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if Timeslot is available
-    const isAvailable = await Appointments.findOne({appointmentTime})
+    const isAvailable = await Appointments.findOne({
+        appointmentTime, 
+        appointmentDate,
+        service})
+
     if(isAvailable){
         res.status(400)
-        throw new Error('Timeslot already in use')
+        throw new Error('Timeslot already booked for the selected service! Please try again')
     }
 })
 
