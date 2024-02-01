@@ -15,16 +15,32 @@ const getAdmin = asyncHandler (async (req, res) => {
 //Get One Admin
 //@route GET /api/admin/:id
 //@access Public
-const getOneAdmin = asyncHandler (async (req, res) => {
-    const admin = await Admin.findById(req.params.id)
-
-    if(!admin){
-        res.status(400)
-        throw new Error('User no found')
+// const getOneAdmin = asyncHandler(async (req, res) => {
+//     const admin = await Admin.findById(req.params.id);
+  
+//     if (!admin) {
+//       res.status(400).json({ error: 'User not found' });
+//     }
+  
+//     res.status(200).json(admin);
+//   });
+const getOneAdmin = asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+      res.status(400).json({ error: 'Invalid admin ID' });
+      return;
     }
-    
-    res.status(200).json(admin)
-})
+  
+    const admin = await Admin.findById(req.params.id);
+  
+    if (!admin) {
+      res.status(400).json({ error: 'User not found' });
+      return;
+    }
+  
+    res.status(200).json(admin);
+  });
+  
+  
 
 //Get Multiple Admin
 //@route GET /api/admin/:ids
@@ -55,9 +71,10 @@ const loginAdmin = asyncHandler (async (req, res) => {
     const userExist = await Admin.findOne({UserName, compare})
 
     if(userExist){
+        const adminId = userExist._id;
         const isAdmin = userExist.role === 'admin';
-        const token = jwt.sign({ userId: userExist._id, isAdmin }, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ token, isAdmin });
+        const token = jwt.sign({ adminId: userExist._id, isAdmin }, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ token, adminId, isAdmin });
         // const getUser = await Admin.findOne(userExist)
         // res.status(200).json(getUser)
     } else {
@@ -104,7 +121,7 @@ const postAdmin = asyncHandler (async (req, res) => {
 
     if(admin){
         res.status(201).json({
-            _id: admin.id,
+            _id: admin._id,
             UserName: admin.UserName,
             name: admin.name,
             role: admin.role,

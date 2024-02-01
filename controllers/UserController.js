@@ -45,9 +45,9 @@ const loginUser = asyncHandler (async (req, res) => {
     const bytes  = CryptoJS.AES.decrypt(password, 'secret key 123')
     const originalPass = bytes.toString(CryptoJS.enc.Utf8)
     
-    const compare = () => {
-        originalPass === password
-    }
+     const compare = () => {
+         originalPass === password
+     }
 
     if(!UserName && !compare){
         res.status(400)

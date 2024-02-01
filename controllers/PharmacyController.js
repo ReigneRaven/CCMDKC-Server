@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const Purchase = require('../models/PharmModel')
 const io = require('socket.io')();
+const Inventory = require('../models/InventoryModel');
 
 // Get All Pharmacy Entries
 //@route GET 'api/purchase/all'
@@ -67,7 +68,7 @@ const updatePurchase = asyncHandler(async (req, res) => {
       if (!purchase) {
           res.status(404).json({ error: 'purchase not found' });
       } else {
-          // Update the status of the appointment
+          // Update the status of the purchase
           purchase.status = status;
           await purchase.save();
 
@@ -83,11 +84,38 @@ const updatePurchase = asyncHandler(async (req, res) => {
       res.status(500).json({ error: 'Server Error' });
   }
 });
+
+
+// Update Inventory Stocks
+const updateInventory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { stocksAvailable } = req.body;
+
+  try {
+    const inventoryItem = await Inventory.findById(id);
+
+    if (!inventoryItem) {
+      return res.status(404).json({ error: 'Inventory item not found' });
+    }
+
+    // Update the stocksAvailable value
+    inventoryItem.stocksAvailable = stocksAvailable;
+    await inventoryItem.save();
+
+    res.status(200).json(inventoryItem);
+  } catch (error) {
+    console.error('Error updating inventory:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
   module.exports = {
     getAllPharm,
     postPharm,
     getPurchasesByUser,
-    updatePurchase
+    updatePurchase,
+    updateInventory
   }
 
 

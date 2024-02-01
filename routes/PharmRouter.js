@@ -4,7 +4,8 @@ const {
     postPharm,
     getAllPharm,
     getPurchasesByUser,
-    updatePurchase
+    updatePurchase,
+    updateInventory
 } = require('../controllers/PharmacyController')
 
 
@@ -17,6 +18,8 @@ router.route('/all').get(getAllPharm)
 router.route('/getPurchase/:id').get(getPurchasesByUser)
 
 router.route('/:id/orderstatus').put(updatePurchase)
+
+router.route('inventory/:id').put(updateInventory)
 
 
 
