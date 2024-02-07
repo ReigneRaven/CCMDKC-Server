@@ -62,23 +62,24 @@ const postAppointment = asyncHandler (async (req, res) => {
         appointmentTime
      } = req.body
 
-    if(!UserName || !appointmentTime){
+    if(!UserName || !appointmentTime || !appointmentDate){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if Appointment exist
     const appointmentExist = await Appointments.findOne({
-        appointmentTime, service
+        appointmentTime, appointmentDate, service
     });
 
     if (appointmentExist) {
         res.status(400);
-        throw new Error('Timeslot already booked for the selected service');
+        throw new Error('Timeslot already booked for the selected service on this date');
     }
 
+    // Create new appointment
+    
     const defaultService = req.body.service || 'Nephrology Consultation';
-
     const appointment = await Appointments.create({
         service: defaultService,
         UserName,
