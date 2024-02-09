@@ -38,7 +38,7 @@ const getMultiInventory = asyncHandler(async (req, res) => {
 // @access Public
 const postInventory = asyncHandler(async (req, res) => {
   try {
-    const { itemName, itemDescription, stocksAvailable, itemPrice } = req.body;
+    const { itemName, itemDescription, stocksAvailable, itemPrice, expireDate } = req.body;
 
     // Check if required fields are present
     if (!itemName || !stocksAvailable) {
@@ -63,6 +63,7 @@ const postInventory = asyncHandler(async (req, res) => {
       itemDescription,
       stocksAvailable,
       itemPrice,
+      expireDate,
       itemImg: req.file ? req.file.path : '',
     });
 
@@ -76,6 +77,7 @@ const postInventory = asyncHandler(async (req, res) => {
       itemDescription: inventory.itemDescription,
       stocksAvailable: inventory.stocksAvailable,
       itemPrice: inventory.itemPrice,
+      expireDate: inventory.expireDate,
       itemImg: inventory.itemImg,
     });
   } catch (error) {

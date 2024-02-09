@@ -15,7 +15,11 @@ const inventorySchema = mongoose.Schema({
     },
     itemPrice: {
         type: Number,
-        required: true
+        required:  [true, 'Please a value']
+    },
+    expireDate: {
+        type: Date,
+        required: [true, 'Please enter Date']
     },
     itemImg: {
         type: String, // Assuming you are storing the file path as a string
