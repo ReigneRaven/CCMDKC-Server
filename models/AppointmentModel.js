@@ -10,7 +10,7 @@ const appointmentSchema = mongoose.Schema({
         required: [true, 'Please enter Username']
     },
     appointmentDate: {
-        type: Date,
+        type: String,
         required: [true, 'Please enter Date']
     },
     appointmentTime: {

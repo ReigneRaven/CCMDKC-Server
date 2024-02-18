@@ -27,10 +27,13 @@ app.use('/api/appointments', require('./routes/AppointmentsRouter'))
 app.use('/api/records', require('./routes/PatientRecordsRouter'))
 app.use('/api/inventory', require('./routes/InventoryRouter'))
 app.use('/api/purchase', require('./routes/PharmRouter')) 
+app.use('/api/announcement', require('./routes/AnnouncementRouter')) 
 
 app.use(errorHandler)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/announcements', express.static(path.join(__dirname, 'announcements')));
+
 // app.listen(port, () => console.log(`Server started on port ${port}`))
 const server = http.createServer(app);
 
