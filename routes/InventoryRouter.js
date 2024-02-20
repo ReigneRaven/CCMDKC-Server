@@ -1,7 +1,7 @@
 
 
 const express = require('express');
-const { getInventory, postInventory, updateInventory, deltInventory, getOneInventory, deltMultiInventory, getMultiInventory } = require('../controllers/InventoryController');
+const { getInventory, postInventory, updateInventory, deltInventory, getOneInventory, deltMultiInventory, getMultiInventory, searchInventory } = require('../controllers/InventoryController');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
@@ -26,5 +26,7 @@ router.route('/').get(getInventory).post(upload.single('itemImg'), postInventory
 router.route('/:id').put(updateInventory).delete(deltInventory).get(getOneInventory);
 
 router.route('/:ids').delete(deltMultiInventory).get(getMultiInventory);
+
+router.route('/search').post(searchInventory)
 
 module.exports = router;

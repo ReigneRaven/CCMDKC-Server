@@ -133,6 +133,38 @@ const deltRecord = asyncHandler (async (req, res) => {
     res.status(200).json({ id: req.params.id})
 })
 
+// MDB Query for Reports
+// @route POST /api/records/search
+// @access Public
+const searchRecords = asyncHandler(async (req, res) => {
+    const { text } = req.body;
+  
+    try {
+      const result = await Records.aggregate([
+        {
+          $search: {
+            index: 'records',
+            compound: {
+              should: [
+                {
+                  text: {
+                    query: text.query,
+                    path: {
+                      wildcard: '*',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ]);
+  
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 module.exports = {
     getRecords,
     getOneRecord,
@@ -140,5 +172,6 @@ module.exports = {
     postRecords,
     updateRecords,
     deltRecord,
-    getRecordsByUserName
+    getRecordsByUserName,
+    searchRecords
 }

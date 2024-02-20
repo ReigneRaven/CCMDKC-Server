@@ -137,6 +137,32 @@ const deltMultiInventory = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
+// MDB Query for Inventory
+// @route POST /api/inventory/search
+// @access Public
+const searchInventory = asyncHandler(async (req, res) => {
+  const { text } = req.body;
+  
+  try {
+    const result = await Inventory.aggregate([
+      {
+        $search: {
+          index: 'Inventory',
+          text: {
+            query: text.query, 
+            path: {
+              wildcard: '*',
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 module.exports = {
   getInventory,
   getOneInventory,
@@ -145,4 +171,5 @@ module.exports = {
   updateInventory,
   deltInventory,
   deltMultiInventory,
+  searchInventory
 };

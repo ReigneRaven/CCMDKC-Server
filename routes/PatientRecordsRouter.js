@@ -6,7 +6,8 @@ const {
     getMultipleRecords, 
     deltRecord,
     getRecordsByUserName,
-    updateRecords
+    updateRecords,
+    searchRecords
 } = require('../controllers/PatientRecordsController')
 const { 
     addMedicalHistory, 
@@ -34,5 +35,7 @@ router.route('/getmedical/:id').get(getOneMedicalHistory)
 router.route('/get-medical-history/:id').get(getAllMedical)
 
 router.route('/getrecord/:userName').get(getRecordsByUserName)
+
+router.route('/search').post(searchRecords)
 
 module.exports = router

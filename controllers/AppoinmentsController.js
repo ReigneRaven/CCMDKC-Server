@@ -202,6 +202,33 @@ const deltMultiAppointment = asyncHandler (async (req, res) => {
     res.status(200).json({ id: req.params.id})
 })
 
+// MDB Query for Reports
+// @route POST /api/appointments/search
+// @access Public
+const searchAppointments = asyncHandler(async (req, res) => {
+    const { text } = req.body;
+    
+    try {
+      const result = await Appointments.aggregate([
+        {
+          $search: {
+            index: 'check',
+            text: {
+              query: text.query, 
+              path: {
+                wildcard: '*',
+              },
+            },
+          },
+        },
+      ]);
+  
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 module.exports = {
     getAppointment,
     getOneAppointment,
@@ -211,5 +238,6 @@ module.exports = {
     updateAppointment,
     deltAppointment,
     deltMultiAppointment,
-    checkAppointment
+    checkAppointment,
+    searchAppointments
 }
