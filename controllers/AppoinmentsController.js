@@ -125,23 +125,6 @@ const checkAppointment = asyncHandler (async (req, res) => {
 })
 
 
-//Update an Appointment
-//@route PUT /api/appointment/:id/status
-//@access Public
-// const updateAppointment = asyncHandler (async (req, res) => {
-//     const appointment = await Appointments.findById(req.params.id)
-
-//     if(!appointment){
-//         res.status(400)
-//         throw new Error('Appointment not found')
-//     }
-
-//     const updatedAppointment = await Appointments.findByIdAndUpdate(req.params.id, req.body, {
-//         new: true
-//     })
-    
-//     res.status(200).json(updatedAppointment)
-// })
 const updateAppointment = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -168,6 +151,27 @@ const updateAppointment = asyncHandler(async (req, res) => {
         res.status(500).json({ error: 'Server Error' });
     }
 });
+
+const cancelAppointment = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const appointment = await Appointments.findById(id);
+
+        if (!appointment) {
+            res.status(404).json({ error: 'Appointment not found' });
+        } else {
+            // Update the status of the appointment to Cancelled
+            appointment.status = 'Cancelled';
+            await appointment.save();
+
+            res.status(200).json(appointment);
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 
 //Delete an Appointment
 //@route DELETE /api/appointment/:id
@@ -236,6 +240,7 @@ module.exports = {
     getAppointmentsByUser,
     postAppointment,
     updateAppointment,
+    cancelAppointment,
     deltAppointment,
     deltMultiAppointment,
     checkAppointment,

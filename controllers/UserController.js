@@ -386,6 +386,27 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+// MDB Query for User
+// @route POST /api/user/search
+// @access Public
+const searchUser = asyncHandler(async (req, res) => {
+  const { query } = req.body; // Assuming the query string is sent in the request body
+
+  try {
+    const regexQuery = new RegExp(query, 'i'); // Create a case-insensitive regular expression
+
+    const users = await User.find({
+      $or: [
+        { UserName: { $regex: regexQuery } }
+      ]
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 module.exports = {
   getUser,
@@ -398,4 +419,5 @@ module.exports = {
   loginUser,
   forgotPassword,
   resetPassword,
+  searchUser
 };

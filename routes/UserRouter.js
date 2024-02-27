@@ -9,7 +9,8 @@ const {
     deltMultiUser, 
     getMultiUser, 
     forgotPassword,
-    resetPassword
+    resetPassword,
+    searchUser
 } = require('../controllers/UserController')
 const router = express.Router()
 
@@ -24,6 +25,8 @@ router.route('/:ids').delete(deltMultiUser).get(getMultiUser)
 router.route('/forgotpassword').post(forgotPassword)
 
 router.route('/resetpassword').post(resetPassword)
+
+router.route('/search').post(searchUser)
 
 module.exports = router
 
