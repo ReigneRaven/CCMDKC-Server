@@ -10,11 +10,11 @@ const pharmacySchema = mongoose.Schema({
         required: true,
     },
     quantity: {
-        type: Number,
+        type: String,
         required: true,
     },
     totalPrice: {
-        type: Number,
+        type: String,
         required: true,
     },
     modeCOD: {

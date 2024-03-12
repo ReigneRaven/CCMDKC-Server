@@ -109,13 +109,35 @@ const updateInventory = asyncHandler(async (req, res) => {
   }
 });
 
+// MDB Query for Order
+// @route POST /api/purchase/search
+// @access Public
+const searchOrder = asyncHandler(async (req, res) => {
+  const { query } = req.body; // Assuming the query string is sent in the request body
+
+  try {
+    const regexQuery = new RegExp(query, 'i'); // Create a case-insensitive regular expression
+
+    const purchases = await Purchase.find({
+      $or: [
+        { UserName: { $regex: regexQuery } }
+      ]
+    });
+
+    res.json(purchases);
+  } catch (error) {
+    console.error('Error searching purchases:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
   module.exports = {
     getAllPharm,
     postPharm,
     getPurchasesByUser,
     updatePurchase,
-    updateInventory
+    updateInventory,
+    searchOrder
   }
 
 
