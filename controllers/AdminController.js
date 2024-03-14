@@ -54,34 +54,30 @@ const getMultiAdmin = asyncHandler (async (req, res) => {
 //@route POST /api/admin/login
 //@access Public
 const loginAdmin = asyncHandler (async (req, res) => {
-    let { UserName, password } = req.body
-    const bytes  = CrytpoJS.AES.decrypt(password, 'secret key 123')
-    const originalPass = bytes.toString(CrytpoJS.enc.Utf8)
-    
-    const compare = () => {
-        originalPass === password
-    }
+    let {UserName, password} = req.body
 
-    if(!UserName && !compare){
+    if(!UserName && !password){
         res.status(400)
         throw new Error('Please add all fields')
     }
 
     //Check if user exist
-    const userExist = await Admin.findOne({UserName, compare})
+    const userExist = await Admin.findOne({UserName})
+
+    const bytes = CrytpoJS.AES.decrypt(userExist.password, 'secret key 123')
+    const originalPass = bytes.toString(CrytpoJS.enc.Utf8)
+
+    if (originalPass !== password) return res.status(400).json({ error: "Wrong Password!" });
 
     if(userExist){
         const adminId = userExist._id;
         const isAdmin = userExist.role === 'admin';
-        const token = jwt.sign({ adminId: userExist._id, isAdmin }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ adminId, isAdmin }, secretKey, { expiresIn: '1h' });
         res.status(200).json({ token, adminId, isAdmin });
-        // const getUser = await Admin.findOne(userExist)
-        // res.status(200).json(getUser)
-    } else {
+    }else{
         res.status(400)
         throw new Error('Wrong Credentials')
     }
-
 })
 
 //Post Admin
